@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h> //htonol, htons, INADDR_ANY, sockaddr_in 등등
+#include <unistd.h>
+#include <string.h>
+#define Maxsize 100
 void error_handling(char *message);
 int main(int argc, char *argv[])
 {
@@ -32,8 +35,14 @@ int main(int argc, char *argv[])
     if (clnt_socket == -1)
         error_handling("accept error");
     //데이터 전송
-    char msg[] = "Hello\n";
-    write(clnt_socket, msg, sizeof(msg));
+    while(1)
+    {
+    char serv_message[Maxsize];
+    fgets(serv_message, Maxsize, stdin);
+    write(clnt_socket, serv_message, sizeof(serv_message));
+    if(serv_message == "exit")
+        break;
+    }
     //소켓들 닫기
     close(clnt_socket);
     close(serv_socket);
