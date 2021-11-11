@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     }
     //뮤텍스 생성
     pthread_mutex_init(&mutx, NULL);
-    //IPv4, TCP 소캣 생성
+    // IPv4, TCP 소캣 생성
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
     //서버주소 정보 초기화
     memset(&serv_addr, 0, sizeof(serv_addr));
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
         pthread_mutex_unlock(&mutx); //뮤텍스 unlock
         printf("member count : %lu \n", sizeof(clnt_socks));
         printf("clnt_cnt : %d \n", clnt_cnt);
-        //handle_clnt 등록 - clnt_sock 을 인자값으로 넘김
+        // handle_clnt 등록 - clnt_sock 을 인자값으로 넘김
         //쓰레드 생성 및 실행
         pthread_create(&t_id, NULL, handle_clnt, (void *)&clnt_sock);
         //쓰레드가 종료되면 소멸시킴
@@ -80,12 +80,12 @@ void *handle_clnt(void *arg)
     //클라이언트로부터 eof 를 수신할때까지 읽어서
     while ((str_len = read(clnt_sock, msg, sizeof(msg))) != 0)
     {
-        //send_msg 함수 호출
+        // send_msg 함수 호출
         send_msg(msg, str_len);
     }
     printf("클라이언트 소켓 삭제 시작\n");
     pthread_mutex_lock(&mutx); //뮤텍스 lock
-    //disconnected 된 클라이언트 삭제
+    // disconnected 된 클라이언트 삭제
     for (i = 0; i < clnt_cnt; i++)
     {
         printf("clnt_sock : %d \n", clnt_sock);
@@ -112,7 +112,7 @@ void *handle_clnt(void *arg)
     printf("현재 clnt_cnt : %d \n", clnt_cnt);
     return NULL;
 }
-//send to all
+// send to all
 void send_msg(char *msg, int len)
 {
     int i;

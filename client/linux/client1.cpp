@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
     cout << sprintf(name, "[%s]", argv[3]);
-    //IPv4, TCP 소켓 생성
+    // IPv4, TCP 소켓 생성
     sock = socket(PF_INET, SOCK_STREAM, 0);
 
     //서버 주소정보 초기화
@@ -43,7 +43,11 @@ int main(int argc, char *argv[])
     serv_addr.sin_port = htons(atoi(argv[2]));
 
     //서버 주소 정보를 기반으로 연결요청, 이때 비로소 클라이언트 소켓이됨.
-    connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == SOCKET_ERROR)
+    {
+        char *error_msg = (char *)"connect() error";
+        error_handling(error_msg);
+    }
 
     //쓰레드 생성 및 실행
     pthread_create(&snd_thread, NULL, send_msg, (void *)&sock);
@@ -82,7 +86,7 @@ void *send_msg(void *arg)
         //클라이언트 이름과 msg 합침
         sprintf(name_msg, "%s %s", name, msg);
 
-        //null 문자 제외하고 서버로 문자열 보냄
+        // null 문자 제외하고 서버로 문자열 보냄
         write(sock, name_msg, strlen(name_msg));
     }
 
@@ -102,7 +106,7 @@ void *recv_msg(void *arg)
     {
 
         str_len = read(sock, name_msg, NAME_SIZE + BUF_SIZE - 1);
-        //read 실패시
+        // read 실패시
         if (str_len == -1)
         {
             return (void *)-1;
