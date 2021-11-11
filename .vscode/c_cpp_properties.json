@@ -3,18 +3,24 @@
         {
             "name": "Win32",
             "includePath": [
-                "C:/Program Files/mingw-w64/mingw64",
-                "C:/MinGW/include"
+                "${workspaceFolder}/**"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "windowsSdkVersion": "10.0.19041.0",
-            "compilerPath": "C:\\Program Files\\mingw-w64\\mingw64\\bin\\",
-            "cStandard": "c17",
-            "cppStandard": "c++17"
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
         }
     ],
     "version": 4
