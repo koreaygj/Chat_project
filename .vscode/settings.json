@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "stdio.h": "c",
-        "socket.h": "c"
+        "socket.h": "c",
+        "*.tcc": "cpp",
+        "ostream": "cpp"
     }
 }

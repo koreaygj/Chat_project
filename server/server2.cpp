@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -6,13 +6,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <Wave.h>
 
 #define BUF_SIZE 100
 #define MAX_CLNT 100
 
 void *handle_clnt(void *arg);
 void send_msg(char *msg, int len);
-void error_handling(char *message);
 //서버에 접속한 클라이언트 수
 int clnt_cnt = 0;
 //클라이언트와의 송수신을 위해 생성한 소켓의 파일 디스크립터를 저장한 배열
@@ -123,10 +123,4 @@ void send_msg(char *msg, int len)
         write(clnt_socks[i], msg, len);
     }
     pthread_mutex_unlock(&mutx); //뮤텍스 unlock
-}
-void error_handling(char *msg)
-{
-    fputs(msg, stderr);
-    fputc('\n', stderr);
-    exit(1);
 }

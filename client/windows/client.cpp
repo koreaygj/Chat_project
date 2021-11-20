@@ -1,15 +1,19 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <Windows.h>
 #include <process.h>
-
+#include <fstream>
+#include <iostream>
+#include <wave.h>
+using namespace std;
 #define BUF_SIZE 100
 #define NAME_SIZE 20
+#pragma comment(lib, "winmm.lib");
 
 unsigned WINAPI SendMsg(void *arg); //쓰레드 전송함수
 unsigned WINAPI RecvMsg(void *arg); //쓰레드 수신함수
-void error_handling(char *msg);
+unsigned WINAPI SendVoc(void *arg);
+unsigned WINAPI RecvVoc(void *arg);
 
 char name[NAME_SIZE] = "[DEFAULT]";
 char msg[BUF_SIZE];
@@ -19,7 +23,7 @@ int main(int argc, char *argv[])
   WSADATA wsaData;
   SOCKET sock;
   SOCKADDR_IN server_addr;
-  HANDLE sendThread, recvThread;
+  HANDLE sendmsgThread, recvmsgThread, sendvocThread, recvvocThread;
   if (argc != 4)
   {
     printf("Usage : %s <IP> <port> <name>\n", argv[0]);
@@ -28,8 +32,7 @@ int main(int argc, char *argv[])
   // 윈도우 소켓을 사용한다고 운영체제에 알림
   if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
   {
-    char *error_msg = (char *)"WSAStartup() error!";
-    error_handling(error_msg);
+    cout << " WSAStartup() error !" << endl;
   }
   sprintf(name, "[%s]", argv[3]);
   //소켓을 하나 생성한다.
@@ -42,17 +45,19 @@ int main(int argc, char *argv[])
   //서버에 접속한다.
   if (connect(sock, (SOCKADDR *)&server_addr, sizeof(server_addr)) == SOCKET_ERROR)
   {
-    char *error_msg = (char *)"connect() error";
-    error_handling(error_msg);
+    cout << "connect() error" << endl;
   }
 
   //접속에 성공하면 이 줄 아래가 실행된다.
 
-  sendThread = (HANDLE)_beginthreadex(NULL, 0, SendMsg, (void *)&sock, 0, NULL); //메시지 전송용 쓰레드가 실행된다.
-  recvThread = (HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void *)&sock, 0, NULL); //메시지 수신용 쓰레드가 실행된다.
-
-  WaitForSingleObject(sendThread, INFINITE); //전송용 쓰레드가 중지될때까지 기다린다.
-  WaitForSingleObject(recvThread, INFINITE); //수신용 쓰레드가 중지될때까지 기다린다.
+  sendmsgThread = (HANDLE)_beginthreadex(NULL, 0, SendMsg, (void *)&sock, 0, NULL); //메시지 전송용 쓰레드가 실행
+  recvmsgThread = (HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void *)&sock, 0, NULL); //메시지 수신용 쓰레드가 실행
+  sendvocThread = (HANDLE)_beginthreadex(NULL, 0, SendVoc, (void *)&sock, 0, NULL); // VOICE_CHAT용 쓰레드 실행
+  recvvocThread = (HANDLE)_beginthreadex(NULL, 0, RecvVoc, (void *)&sock, 0, NULL);
+  WaitForSingleObject(sendmsgThread, INFINITE); //전송용 쓰레드가 중지될때까지 기다린다.
+  WaitForSingleObject(recvmsgThread, INFINITE); //수신용 쓰레드가 중지될때까지 기다린다.
+  WaitForSingleObject(sendvocThread, INFINITE);
+  WaitForSingleObject(recvvocThread, INFINITE);
   //클라이언트가 종료를 시도한다면 이줄 아래가 실행된다.
   closesocket(sock); //소켓을 종료한다.
   WSACleanup();      //윈도우 소켓 사용중지를 운영체제에 알린다.
@@ -92,10 +97,12 @@ unsigned WINAPI RecvMsg(void *arg)
   }
   return 0;
 }
-
-void error_handling(char *msg)
+unsigned WINAPI SendVoc(void *arg)
 {
-  fputs(msg, stderr);
-  fputc('\n', stderr);
-  exit(1);
+  Wave wav;
+  wav.Connect();
+}
+unsigned WINAPI RecvVoc(void *arg)
+{
+  Wave wav;
 }
