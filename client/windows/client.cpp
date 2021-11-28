@@ -15,6 +15,9 @@ unsigned WINAPI RecvMsg(void *arg); //쓰레드 수신함수
 unsigned WINAPI SendVoc(void *arg);
 unsigned WINAPI RecvVoc(void *arg);
 
+string def_col = "\033[0m";
+string colors[] = {"\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[35m", "\033[36m"};
+
 char name[NAME_SIZE] = "[DEFAULT]";
 char msg[BUF_SIZE];
 
@@ -52,18 +55,13 @@ int main(int argc, char *argv[])
 
   sendmsgThread = (HANDLE)_beginthreadex(NULL, 0, SendMsg, (void *)&sock, 0, NULL); //메시지 전송용 쓰레드가 실행
   recvmsgThread = (HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void *)&sock, 0, NULL); //메시지 수신용 쓰레드가 실행
-  sendvocThread = (HANDLE)_beginthreadex(NULL, 0, SendVoc, (void *)&sock, 0, NULL); // VOICE_CHAT용 쓰레드 실행
-  recvvocThread = (HANDLE)_beginthreadex(NULL, 0, RecvVoc, (void *)&sock, 0, NULL);
-  WaitForSingleObject(sendmsgThread, INFINITE); //전송용 쓰레드가 중지될때까지 기다린다.
-  WaitForSingleObject(recvmsgThread, INFINITE); //수신용 쓰레드가 중지될때까지 기다린다.
-  WaitForSingleObject(sendvocThread, INFINITE);
-  WaitForSingleObject(recvvocThread, INFINITE);
+  WaitForSingleObject(sendmsgThread, INFINITE);                                     //전송용 쓰레드가 중지될때까지 기다린다.
+  WaitForSingleObject(recvmsgThread, INFINITE);                                     //수신용 쓰레드가 중지될때까지 기다린다.
   //클라이언트가 종료를 시도한다면 이줄 아래가 실행된다.
   closesocket(sock); //소켓을 종료한다.
   WSACleanup();      //윈도우 소켓 사용중지를 운영체제에 알린다.
   return 0;
 }
-
 unsigned WINAPI SendMsg(void *arg)
 {                                 //전송용 쓰레드함수
   SOCKET sock = *((SOCKET *)arg); //서버용 소켓을 전달한다.
@@ -81,7 +79,6 @@ unsigned WINAPI SendMsg(void *arg)
   }
   return 0;
 }
-
 unsigned WINAPI RecvMsg(void *arg)
 {
   SOCKET sock = *((SOCKET *)arg); //서버용 소켓을 전달한다.
@@ -97,10 +94,29 @@ unsigned WINAPI RecvMsg(void *arg)
   }
   return 0;
 }
+int read_file(char *path, char *buf, int len)
+{
+  FILE *fp = NULL;
+  int readlen;
+  if ((fp = fopen(path, "rb")) == NULL)
+  {
+    puts("fopen 에러");
+    return -1;
+  }
+  buf[len] = NULL;
+  if ((readlen = fread(buf, sizeof(char), len, fp)) < len)
+  {
+    fclose(fp);
+    puts("fread 에러");
+    return -1;
+  }
+  fclose(fp);
+  return 0;
+}
 unsigned WINAPI SendVoc(void *arg)
 {
   Wave wav;
-  wav.Connect();
+  wav.Connect("172.29.52.167", 8000);
 }
 unsigned WINAPI RecvVoc(void *arg)
 {
