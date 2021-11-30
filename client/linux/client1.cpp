@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
     serv_addr.sin_port = htons(atoi(argv[2]));
     //서버 주소 정보를 기반으로 연결요청, 이때 비로소 클라이언트 소켓이됨.
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == SOCKET_ERROR)
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
     {
         cout << "connect() error\n";
     }
@@ -52,21 +52,16 @@ int main(int argc, char *argv[])
     close(sock);
     return 0;
 }
-
 //송신
 void *send_msg(void *arg)
 {
-
     //클라이언트의 파일 디스크립터
     int sock = *((int *)arg);
     char name_msg[NAME_SIZE + BUF_SIZE];
-
     while (1)
     {
-
         //콘솔에서 문자열 입력 받고
         fgets(msg, BUF_SIZE, stdin);
-
         if (!strcmp(msg, "q\n") || !strcmp(msg, "Q\n"))
         {
             //클라이언트 소캣 종료
@@ -76,14 +71,11 @@ void *send_msg(void *arg)
         }
         //클라이언트 이름과 msg 합침
         sprintf(name_msg, "%s %s", name, msg);
-
         // null 문자 제외하고 서버로 문자열 보냄
         write(sock, name_msg, strlen(name_msg));
     }
-
     return NULL;
 }
-
 //수신
 void *recv_msg(void *arg)
 {
