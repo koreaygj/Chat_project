@@ -6,7 +6,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
-#include <Wave.h>
 
 #define BUF_SIZE 100
 #define MAX_CLNT 100
