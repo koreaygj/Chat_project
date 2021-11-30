@@ -158,71 +158,71 @@ void send_file(char *msg, int len)
     }
     pthread_mutex_unlock(&mutx);
 }
-int save_file(char *file_buf, int filelen)
-{
-    char *split_pos = NULL;
-    char fullpath[MAX_PATH] = "", filename[MAX_PATH] = "";
-    int filename_len = 0, filecontent_len = 0;
-    split_pos = strchr(file_buf, FILE_DELIMITER);
-    if (save_folder[strlen(save_folder) - 1] == '\\')
-        strcpy(fullpath, save_folder);
-    else
-        sprintf(fullpath, "%s\\", save_folder);
-    strncpy(filename, file_buf, split_pos - file_buf);
-    strcat(fullpath, filename);
-    filename_len = strlen(filename);
-    filecontent_len = filelen - (filename_len + sizeof(FILE_DELIMITER));
-    if (write_file(fullpath, file_buf + strlen(filename) + sizeof(FILE_DELIMITER), filecontent_len) != 0)
-    {
-        puts("write_file 에러\n");
-        return -1;
-    }
-    printf(" >> 수신한 파일명 : %s, 파일크기 : %d바이트\n", fullpath, filecontent_len);
-    return 0;
-}
-int recv_file(int socket)
-{
-    PACKET_HEADER trans_header;
-    char *header = (char *)&trans_header;
-    char *file_buf = NULL, *data_buf = NULL;
-    int header_len = 0, filelen = 0;
-    int read_len = 0, data_len = 0;
+// int save_file(char *file_buf, int filelen)
+// {
+//     char *split_pos = NULL;
+//     char fullpath[MAX_PATH] = "", filename[MAX_PATH] = "";
+//     int filename_len = 0, filecontent_len = 0;
+//     split_pos = strchr(file_buf, FILE_DELIMITER);
+//     if (save_folder[strlen(save_folder) - 1] == '\\')
+//         strcpy(fullpath, save_folder);
+//     else
+//         sprintf(fullpath, "%s\\", save_folder);
+//     strncpy(filename, file_buf, split_pos - file_buf);
+//     strcat(fullpath, filename);
+//     filename_len = strlen(filename);
+//     filecontent_len = filelen - (filename_len + sizeof(FILE_DELIMITER));
+//     if (write_file(fullpath, file_buf + strlen(filename) + sizeof(FILE_DELIMITER), filecontent_len) != 0)
+//     {
+//         puts("write_file 에러\n");
+//         return -1;
+//     }
+//     printf(" >> 수신한 파일명 : %s, 파일크기 : %d바이트\n", fullpath, filecontent_len);
+//     return 0;
+// }
+// int recv_file(int socket)
+// {
+//     PACKET_HEADER trans_header;
+//     char *header = (char *)&trans_header;
+//     char *file_buf = NULL, *data_buf = NULL;
+//     int header_len = 0, filelen = 0;
+//     int read_len = 0, data_len = 0;
 
-    header_len = 5;
-    memset(&trans_header, 0, sizeof(PACKET_HEADER));
-    while (read_len = recv_socket(socket, (char *)header, header_len))
-    {
-        if (read_len == -1)
-            return -1;
-        else if (read_len == header_len)
-            break;
+//     header_len = 5;
+//     memset(&trans_header, 0, sizeof(PACKET_HEADER));
+//     while (read_len = recv_socket(socket, (char *)header, header_len))
+//     {
+//         if (read_len == -1)
+//             return -1;
+//         else if (read_len == header_len)
+//             break;
 
-        header_len -= read_len;
-        header += read_len;
-    }
-    memcpy(&trans_header.len, &header[1], 4);
-    filelen = ntohl(trans_header.len);
-    if ((filelen <= 0) || (trans_header.type != PACKET_TYPE))
-        return -1;
-    if ((file_buf = (char *)calloc(1, filelen + 1)) == NULL)
-        return -1;
-    read_len = 0;
-    data_buf = file_buf;
-    data_len = filelen;
-    while (1)
-    {
-        read_len = recv_socket(socket, (char *)data_buf, data_len);
-        if (read_len == -1)
-        {
-            puts("recv_socket 에러");
-            return -1;
-        }
-        else if (read_len == data_len)
-            break;
-        data_len -= read_len;
-        data_buf += read_len;
-    }
-    save_file(file_buf, filelen);
-    free(file_buf);
-    return 0;
-}
+//         header_len -= read_len;
+//         header += read_len;
+//     }
+//     memcpy(&trans_header.len, &header[1], 4);
+//     filelen = ntohl(trans_header.len);
+//     if ((filelen <= 0) || (trans_header.type != PACKET_TYPE))
+//         return -1;
+//     if ((file_buf = (char *)calloc(1, filelen + 1)) == NULL)
+//         return -1;
+//     read_len = 0;
+//     data_buf = file_buf;
+//     data_len = filelen;
+//     while (1)
+//     {
+//         read_len = recv_socket(socket, (char *)data_buf, data_len);
+//         if (read_len == -1)
+//         {
+//             puts("recv_socket 에러");
+//             return -1;
+//         }
+//         else if (read_len == data_len)
+//             break;
+//         data_len -= read_len;
+//         data_buf += read_len;
+//     }
+//     save_file(file_buf, filelen);
+//     free(file_buf);
+//     return 0;
+// }
