@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <Windows.h>
+#include <winsock2.h>
 #include <process.h>
 #include <fstream>
 #include <iostream>
-#include <wave.h>
 using namespace std;
 #define BUF_SIZE 100
 #define NAME_SIZE 20
@@ -12,8 +12,6 @@ using namespace std;
 
 unsigned WINAPI SendMsg(void *arg); //쓰레드 전송함수
 unsigned WINAPI RecvMsg(void *arg); //쓰레드 수신함수
-unsigned WINAPI SendVoc(void *arg);
-unsigned WINAPI RecvVoc(void *arg);
 
 string def_col = "\033[0m";
 string colors[] = {"\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[35m", "\033[36m"};
@@ -94,31 +92,22 @@ unsigned WINAPI RecvMsg(void *arg)
   }
   return 0;
 }
-int read_file(char *path, char *buf, int len)
-{
-  FILE *fp = NULL;
-  int readlen;
-  if ((fp = fopen(path, "rb")) == NULL)
-  {
-    puts("fopen 에러");
-    return -1;
-  }
-  buf[len] = NULL;
-  if ((readlen = fread(buf, sizeof(char), len, fp)) < len)
-  {
-    fclose(fp);
-    puts("fread 에러");
-    return -1;
-  }
-  fclose(fp);
-  return 0;
-}
-unsigned WINAPI SendVoc(void *arg)
-{
-  Wave wav;
-  wav.Connect("172.29.52.167", 8000);
-}
-unsigned WINAPI RecvVoc(void *arg)
-{
-  Wave wav;
-}
+// int read_file(char *path, char *buf, int len)
+// {
+//   FILE *fp = NULL;
+//   int readlen;
+//   if ((fp = fopen(path, "rb")) == NULL)
+//   {
+//     puts("fopen 에러");
+//     return -1;
+//   }
+//   buf[len] = NULL;
+//   if ((readlen = fread(buf, sizeof(char), len, fp)) < len)
+//   {
+//     fclose(fp);
+//     puts("fread 에러");
+//     return -1;
+//   }
+//   fclose(fp);
+//   return 0;
+// }
