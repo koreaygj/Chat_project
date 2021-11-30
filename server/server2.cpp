@@ -80,10 +80,6 @@ void *handle_clnt(void *arg)
     while ((str_len = read(clnt_sock, msg, sizeof(msg))) != 0)
     {
         // send_msg 함수 호출
-        if (msg == "file")
-        {
-            send_file(msg, strlen);
-        }
         send_msg(msg, str_len);
     }
     printf("클라이언트 소켓 삭제 시작\n");
@@ -126,38 +122,38 @@ void send_msg(char *msg, int len)
     }
     pthread_mutex_unlock(&mutx); //뮤텍스 unlock
 }
-void send_file(char *msg, int len)
-{
-    pthread_mutex_lock(&mutx);
-    for (int i = 0; < clnt_cnt; i++)
-    {
-        // jpg
-        size_t fsize, nsize = 0;
-        size_t fsize2;
-        /* 전송할 파일 이름을 작성합니다 */
-        file = fopen("aurora.jpg" /* 파일이름 */, "rb");
-        /* 파일 크기 계산 */
-        // move file pointer to end
-        fseek(file, 0, SEEK_END);
-        // calculate file size
-        fsize = ftell(file);
-        // move file pointer to first
-        fseek(file, 0, SEEK_SET);
-        // send file contents
-        while (nsize != fsize)
-        {
-            // read from file to buf
-            // 1byte * 256 count = 256byte => buf[256];
-            int fpsize = fread(buf, 1, 256, file);
-            nsize += fpsize;
-            send(serv_sock, buf, fpsize, 0);
-        }
-        fclose(file);
-        close(serv_sock);
-        return 0;
-    }
-    pthread_mutex_unlock(&mutx);
-}
+// void send_file(char *msg, int len)
+// {
+//     pthread_mutex_lock(&mutx);
+//     for (int i = 0; < clnt_cnt; i++)
+//     {
+//         // jpg
+//         size_t fsize, nsize = 0;
+//         size_t fsize2;
+//         /* 전송할 파일 이름을 작성합니다 */
+//         file = fopen("aurora.jpg" /* 파일이름 */, "rb");
+//         /* 파일 크기 계산 */
+//         // move file pointer to end
+//         fseek(file, 0, SEEK_END);
+//         // calculate file size
+//         fsize = ftell(file);
+//         // move file pointer to first
+//         fseek(file, 0, SEEK_SET);
+//         // send file contents
+//         while (nsize != fsize)
+//         {
+//             // read from file to buf
+//             // 1byte * 256 count = 256byte => buf[256];
+//             int fpsize = fread(buf, 1, 256, file);
+//             nsize += fpsize;
+//             send(serv_sock, buf, fpsize, 0);
+//         }
+//         fclose(file);
+//         close(serv_sock);
+//         return;
+//     }
+//     pthread_mutex_unlock(&mutx);
+// }
 // int save_file(char *file_buf, int filelen)
 // {
 //     char *split_pos = NULL;
